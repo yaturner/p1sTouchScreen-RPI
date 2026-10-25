@@ -36,6 +36,7 @@ class AppConfig:
     # the first time Print Files loads. Lets a user with a large/slow
     # library skip that entirely.
     skip_thumbnails: bool = False
+    theme: str = "dark"  # "dark" | "light"
 
 
 @dataclass
@@ -72,6 +73,7 @@ def load_config(path: Path | None = None) -> Config:
         screen_width=int(app_raw.get("screen_width", 1024)),
         screen_height=int(app_raw.get("screen_height", 600)),
         skip_thumbnails=bool(app_raw.get("skip_thumbnails", False)),
+        theme=str(app_raw.get("theme", "dark")),
     )
     return Config(printer=printer, app=app, path=path)
 
@@ -89,6 +91,7 @@ def save_config(config: Config) -> None:
             "screen_width": config.app.screen_width,
             "screen_height": config.app.screen_height,
             "skip_thumbnails": config.app.skip_thumbnails,
+            "theme": config.app.theme,
         },
     }
     with config.path.open("w") as fh:

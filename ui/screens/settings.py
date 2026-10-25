@@ -63,6 +63,15 @@ class SettingsScreen(QWidget):
         root.addLayout(display_row)
         self._update_fullscreen_button()
 
+        theme_row = QHBoxLayout()
+        theme_row.addWidget(QLabel("Theme:"))
+        self._theme_btn = QPushButton()
+        self._theme_btn.clicked.connect(self._on_toggle_theme)
+        theme_row.addWidget(self._theme_btn)
+        theme_row.addStretch(1)
+        root.addLayout(theme_row)
+        self._update_theme_button()
+
         thumb_row = QHBoxLayout()
         thumb_label = QLabel(
             "Skip thumbnails (this printer's FTP is slow -- a large file "
@@ -168,6 +177,15 @@ class SettingsScreen(QWidget):
     def _on_toggle_fullscreen(self) -> None:
         self._main_window.set_fullscreen(not self._main_window.config.app.fullscreen)
         self._update_fullscreen_button()
+
+    def _update_theme_button(self) -> None:
+        is_dark = self._main_window.config.app.theme == "dark"
+        self._theme_btn.setText("Switch to Light" if is_dark else "Switch to Dark")
+
+    def _on_toggle_theme(self) -> None:
+        is_dark = self._main_window.config.app.theme == "dark"
+        self._main_window.set_theme("light" if is_dark else "dark")
+        self._update_theme_button()
 
     def _update_skip_thumbnails_button(self) -> None:
         skipping = self._main_window.config.app.skip_thumbnails

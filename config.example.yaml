@@ -21,3 +21,5 @@ app:
   # first time Print Files loads. Set true to skip downloading/showing
   # thumbnails entirely (also available as a toggle in Settings).
   skip_thumbnails: false
+  # "dark" or "light" -- also available as a toggle in Settings.
+  theme: dark

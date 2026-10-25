@@ -15,13 +15,13 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
-from pathlib import Path
 
 from PySide6.QtWidgets import QApplication
 
 from config import load_config
 from printer.mock_backend import MockBackend
 from ui.main_window import MainWindow
+from ui.theme import build_stylesheet
 
 
 def build_backend(config, force_mock: bool):
@@ -50,9 +50,7 @@ def main() -> int:
     config = load_config()
 
     app = QApplication(sys.argv)
-    style_path = Path(__file__).resolve().parent / "resources" / "style.qss"
-    if style_path.exists():
-        app.setStyleSheet(style_path.read_text())
+    app.setStyleSheet(build_stylesheet(config.app.theme))
 
     backend = build_backend(config, force_mock=args.mock)
     if args.mock:

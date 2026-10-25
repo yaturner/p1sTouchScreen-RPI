@@ -9,15 +9,15 @@ from __future__ import annotations
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QPainter, QPen, QPixmap, QPolygonF
 
-_ICON_COLOR = "#cfd3da"  # matches navTileLabel's text color
+_ICON_COLOR = "#cfd3da"  # fallback; callers normally pass the active theme's icon color
 
 
-def _new_pixmap(size: int) -> tuple[QPixmap, QPainter]:
+def _new_pixmap(size: int, color: str) -> tuple[QPixmap, QPainter]:
     pixmap = QPixmap(size, size)
     pixmap.fill(Qt.GlobalColor.transparent)
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    pen = QPen(QColor(_ICON_COLOR))
+    pen = QPen(QColor(color))
     pen.setWidthF(size * 0.06)
     pen.setCapStyle(Qt.PenCapStyle.RoundCap)
     pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
@@ -25,8 +25,8 @@ def _new_pixmap(size: int) -> tuple[QPixmap, QPainter]:
     return pixmap, painter
 
 
-def draw_folder_icon(size: int) -> QPixmap:
-    pixmap, painter = _new_pixmap(size)
+def draw_folder_icon(size: int, color: str = _ICON_COLOR) -> QPixmap:
+    pixmap, painter = _new_pixmap(size, color)
 
     tab = QRectF(size * 0.14, size * 0.22, size * 0.32, size * 0.14)
     painter.drawRoundedRect(tab, size * 0.03, size * 0.03)
@@ -38,9 +38,9 @@ def draw_folder_icon(size: int) -> QPixmap:
     return pixmap
 
 
-def draw_spool_icon(size: int) -> QPixmap:
+def draw_spool_icon(size: int, color: str = _ICON_COLOR) -> QPixmap:
     """Side view of a thread spool: two flanges joined by a wound hub."""
-    pixmap, painter = _new_pixmap(size)
+    pixmap, painter = _new_pixmap(size, color)
 
     left = size * 0.22
     right = size * 0.78
@@ -65,10 +65,10 @@ def draw_spool_icon(size: int) -> QPixmap:
     return pixmap
 
 
-def draw_jog_icon(size: int) -> QPixmap:
+def draw_jog_icon(size: int, color: str = _ICON_COLOR) -> QPixmap:
     """Four-direction d-pad, representing the Control screen's jog grid."""
-    pixmap, painter = _new_pixmap(size)
-    painter.setBrush(QColor(_ICON_COLOR))
+    pixmap, painter = _new_pixmap(size, color)
+    painter.setBrush(QColor(color))
 
     cx, cy = size * 0.5, size * 0.5
     arm = size * 0.16  # distance from center to each arrowhead's base

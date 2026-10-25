@@ -16,6 +16,7 @@ from config import Config, save_config
 from printer.base import PrinterBackend
 from state import ConnectionState, GcodeState, PrinterState
 from ui.status_bar import StatusBar
+from ui.theme import build_stylesheet
 from ui.widgets.connection_overlay import ConnectionOverlay
 from ui.widgets.hms_banner import HMSBanner
 from ui.widgets.loading_overlay import LoadingOverlay
@@ -119,6 +120,17 @@ class MainWindow(QMainWindow):
         self.config.app.fullscreen = fullscreen
         save_config(self.config)
         self.apply_window_mode(fullscreen)
+
+    def set_theme(self, mode: str) -> None:
+        """User-facing Light/Dark toggle (Settings screen) -- applies live."""
+        self.config.app.theme = mode
+        save_config(self.config)
+        app = QApplication.instance()
+        app.setStyleSheet(build_stylesheet(mode))
+        for widget in self._screens.values():
+            apply_theme = getattr(widget, "apply_theme", None)
+            if callable(apply_theme):
+                apply_theme(mode)
 
     def register_screen(self, name: str, widget: QWidget) -> None:
         self._screens[name] = widget
