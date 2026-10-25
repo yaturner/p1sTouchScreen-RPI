@@ -74,7 +74,7 @@ class CameraPollThread(QThread):
 # 3MF files above this size aren't worth a full download just for the
 # embedded preview PNG -- there's no cheap partial-fetch of one zip member
 # over this printer's FTP server, so a full download is the only option.
-_MAX_THUMBNAIL_FILE_BYTES = 15 * 1024 * 1024
+_MAX_THUMBNAIL_FILE_BYTES = 50 * 1024 * 1024
 
 
 class ThumbnailLoader(QThread):
