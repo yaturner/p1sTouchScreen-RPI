@@ -372,6 +372,15 @@ class RealBackend(PrinterBackend):
     def __init__(self, ip: str, access_code: str, serial: str, skip_thumbnails: bool = False) -> None:
         super().__init__()
         self._printer = bl.Printer(ip, access_code, serial)
+        # bambulabs_api's ftplib.FTP_TLS wrapper is constructed with no
+        # timeout, so a genuinely stalled transfer (confirmed via a verbose
+        # run: the FTP control connection for a large thumbnail download
+        # stayed open with zero progress and no exception) blocks forever.
+        # Since ThumbnailLoader processes its queue one file at a time, a
+        # single stuck download freezes every thumbnail queued behind it
+        # for the rest of the session. Bound it so a stall surfaces as a
+        # caught socket.timeout instead.
+        self._printer.ftp_client.ftps.timeout = 30
         self._camera_thread: CameraPollThread | None = None
         self._thumbnail_loader: ThumbnailLoader | None = None
         self._skip_thumbnails = skip_thumbnails
