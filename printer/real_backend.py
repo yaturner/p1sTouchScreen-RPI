@@ -12,6 +12,7 @@ import json
 import logging
 import queue
 import threading
+import time
 import xml.etree.ElementTree as ET
 import zipfile
 from datetime import datetime
@@ -406,6 +407,7 @@ class RealBackend(PrinterBackend):
         self._poll_timer.timeout.connect(self._poll)
 
         self._connecting = False
+        self._connect_attempt_started: float | None = None
 
     # -- lifecycle -----------------------------------------------------
     def connect_printer(self) -> None:
@@ -430,9 +432,12 @@ class RealBackend(PrinterBackend):
         self.connection_changed.emit(ConnectionState.DISCONNECTED)
 
     def _try_connect(self) -> None:
+        self._connecting = True
+        self._connect_attempt_started = time.monotonic()
         try:
             self._printer.connect()
         except Exception as exc:
+            self._connecting = False
             logger.warning("printer.connect() failed: %s", exc)
             self.error.emit(f"Connection failed: {exc}")
             return
@@ -454,6 +459,7 @@ class RealBackend(PrinterBackend):
 
         prev = self._state.connection
         if connected:
+            self._connecting = False
             if prev != ConnectionState.CONNECTED:
                 self._state.connection = ConnectionState.CONNECTED
                 self.connection_changed.emit(ConnectionState.CONNECTED)
@@ -464,7 +470,23 @@ class RealBackend(PrinterBackend):
             if prev != new_state:
                 self._state.connection = new_state
                 self.connection_changed.emit(new_state)
-            self._try_connect()
+            # Don't call connect() again while an attempt is still settling --
+            # bambulabs_api's connect() re-issues connect_async()+loop_start()
+            # on the same MQTT client every time it's called, and calling it
+            # on top of an attempt that's already in flight (this guard was
+            # declared via self._connecting but never actually wired up) can
+            # only make an unstable connection worse by compounding whatever
+            # is already causing it to drop. Only retry once the previous
+            # attempt has had _RECONNECT_INTERVAL_MS to either succeed or
+            # genuinely fail.
+            attempt_age_ms = (
+                (time.monotonic() - self._connect_attempt_started) * 1000
+                if self._connect_attempt_started is not None else None
+            )
+            if not self._connecting or (
+                attempt_age_ms is not None and attempt_age_ms >= _RECONNECT_INTERVAL_MS
+            ):
+                self._try_connect()
 
     def _pull_state(self) -> None:
         p = self._printer
