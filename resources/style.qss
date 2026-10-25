@@ -60,10 +60,10 @@ QWidget#navTile QPushButton#navTileButton:pressed {
     background-color: #00b371;
 }
 QLabel#navTileIcon {
-    font-size: 64px;
+    font-size: 96px;
 }
 QLabel#navTileLabel {
-    font-size: 20px;
+    font-size: 30px;
     color: #cfd3da;
 }
 

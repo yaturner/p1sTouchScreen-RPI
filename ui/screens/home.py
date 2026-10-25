@@ -4,10 +4,22 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from state import GcodeState, PrinterState
+from ui.widgets.nav_icons import draw_folder_icon, draw_jog_icon, draw_spool_icon
 from ui.widgets.nav_tile import NavTile
 from ui.widgets.robot_face import draw_robot_face
 
-_ASSISTANT_ICON_SIZE = 40
+_ASSISTANT_ICON_SIZE = 72
+_NAV_ICON_SIZE = 96
+
+# Drawn icons for glyphs that don't render reliably as emoji (missing
+# color-emoji font coverage shows these as blank boxes on some systems,
+# and control knobs in particular falls back to an illegible monochrome
+# form even where the font IS present) -- see ui/widgets/nav_icons.py.
+_DRAWN_ICONS = {
+    "print_files": draw_folder_icon,
+    "filament_ams": draw_spool_icon,
+    "control": draw_jog_icon,
+}
 
 
 class HomeScreen(QWidget):
@@ -36,7 +48,7 @@ class HomeScreen(QWidget):
             # status screen preemptively.
             ("▶", "Print Monitor", "print_monitor"),
             ("🧵", "Filament", "filament_ams"),
-            ("🎛", "Control", "control"),
+            ("🕹", "Control", "control"),
             ("⚙", "Settings", "settings"),
             ("🩺", "Assistant", "assistant"),
         ]
@@ -49,6 +61,8 @@ class HomeScreen(QWidget):
             if target == "assistant":
                 self._assistant_tile = tile
                 tile.set_icon_pixmap(draw_robot_face(sad=False, size=_ASSISTANT_ICON_SIZE))
+            elif target in _DRAWN_ICONS:
+                tile.set_icon_pixmap(_DRAWN_ICONS[target](_NAV_ICON_SIZE))
         rows = -(-len(tiles) // columns)  # ceil division
         for r in range(rows):
             grid.setRowStretch(r, 1)
