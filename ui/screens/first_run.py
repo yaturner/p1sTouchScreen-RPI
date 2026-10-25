@@ -55,7 +55,7 @@ class FirstRunScreen(QWidget):
     def _on_save(self) -> None:
         cfg = self._main_window.config
         cfg.printer.ip = self._ip_edit.text().strip()
-        cfg.printer.serial = self._serial_edit.text().strip()
+        cfg.printer.serial = self._serial_edit.text().strip().upper()
         cfg.printer.access_code = self._code_edit.text().strip()
         if not cfg.printer.is_complete:
             QMessageBox.warning(self, "Incomplete", "All three fields are required.")

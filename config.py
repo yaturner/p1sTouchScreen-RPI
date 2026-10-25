@@ -65,7 +65,13 @@ def load_config(path: Path | None = None) -> Config:
     printer = PrinterConfig(
         ip=str(printer_raw.get("ip", "")),
         access_code=str(printer_raw.get("access_code", "")),
-        serial=str(printer_raw.get("serial", "")),
+        # Bambu's broker ACL is case-sensitive on the serial used in MQTT
+        # topics (device/<serial>/report) -- a lowercase letter where the
+        # real serial has uppercase connects fine (auth is via access_code,
+        # not serial) but silently kills the connection within ~10ms of the
+        # subscribe that follows, with a generic "Unspecified error" that
+        # gives no hint it's a case mismatch. Normalize defensively.
+        serial=str(printer_raw.get("serial", "")).upper(),
     )
     app = AppConfig(
         backend=str(app_raw.get("backend", "mock")),
