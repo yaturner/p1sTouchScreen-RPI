@@ -3,7 +3,7 @@
 QWidget#mainWindow, QWidget {
     background-color: #1b1e23;
     color: #eaeaea;
-    font-size: 16px;
+    font-size: 20px;
 }
 
 QWidget#statusBar {
@@ -15,7 +15,7 @@ QLabel#statusNozzle, QLabel#statusBed {
     padding-right: 12px;
 }
 QLabel#statusConnection, QLabel#statusCamera {
-    font-size: 18px;
+    font-size: 22px;
 }
 QPushButton#statusQuit {
     background-color: transparent;
@@ -73,7 +73,7 @@ QPushButton#printBanner {
     border-radius: 12px;
     text-align: left;
     padding: 16px;
-    font-size: 18px;
+    font-size: 22px;
 }
 
 QFrame#amsSlot {
@@ -95,7 +95,7 @@ QWidget#hmsBanner {
 }
 QLabel#hmsBannerLabel {
     color: #ffd9b3;
-    font-size: 15px;
+    font-size: 19px;
 }
 QPushButton#hmsBannerDismiss {
     background-color: transparent;
@@ -109,7 +109,7 @@ QLabel#toast {
     color: #eaeaea;
     border-bottom: 1px solid #3a3f47;
     padding: 8px 16px;
-    font-size: 15px;
+    font-size: 19px;
 }
 
 QWidget#connectionOverlay {
@@ -117,7 +117,7 @@ QWidget#connectionOverlay {
 }
 QLabel#connectionOverlayLabel {
     color: #ffffff;
-    font-size: 22px;
+    font-size: 27px;
 }
 
 QWidget#loadingOverlay {
@@ -148,10 +148,10 @@ QLabel#keypadDisplay {
     background-color: #14161a;
     border: 1px solid #333842;
     border-radius: 8px;
-    font-size: 28px;
+    font-size: 34px;
 }
 QPushButton#keypadDigit {
-    font-size: 20px;
+    font-size: 24px;
 }
 QPushButton#keypadConfirm {
     background-color: #00b371;

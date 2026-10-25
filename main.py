@@ -4,6 +4,11 @@ Usage:
     python3 main.py             # uses config.yaml's app.backend setting
     python3 main.py --mock      # force the mock backend (no printer needed)
     python3 main.py --windowed  # don't go fullscreen (handy on a dev machine)
+    python3 main.py --screen settings  # jump straight to a screen on launch
+                                        # (home/print_files/print_monitor/
+                                        # filament_ams/control/settings/
+                                        # assistant) -- handy for screenshots
+                                        # on a machine with no touch/mouse input
 """
 from __future__ import annotations
 
@@ -36,6 +41,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mock", action="store_true", help="force the mock backend")
     parser.add_argument("--windowed", action="store_true", help="disable fullscreen kiosk mode")
+    parser.add_argument("--screen", help="navigate straight to this screen on launch")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -55,6 +61,8 @@ def main() -> int:
     window = MainWindow(backend, config)
     window.resize(config.app.screen_width, config.app.screen_height)
     window.apply_window_mode(config.app.fullscreen and not args.windowed)
+    if args.screen:
+        window.navigate_to(args.screen)
 
     backend.connect_printer()
 
